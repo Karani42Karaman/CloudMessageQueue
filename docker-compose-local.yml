@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.12-management  # Daha güncel bir versiyon
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # AMQP protokolü için port
+      - "15672:15672" # RabbitMQ Yönetim Paneli
+      - "1883:1883"   # MQTT protokolü için port
+      - "15675:15675" # MQTT WebSocket desteği
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_NODENAME: rabbit@rabbitmq
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_config:/etc/rabbitmq
+    command: >
+      bash -c "rabbitmq-plugins enable --offline rabbitmq_mqtt rabbitmq_web_mqtt &&
+               rabbitmq-server"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  rabbitmq-mqtt-consumer:
+    image: rabbitmq-mqtt-consumer
+    build:
+      context: ./rabbitmq-mqtt-consumer  # Dockerfile'ın bulunduğu klasör
+    ports:
+      - "8081:8081"  # Consumer web arayüzü için port
+    environment:
+      - MQTT_BROKER=tcp://rabbitmq:1883
+      - MQTT_CLIENT_ID=mqtt-consumer
+      - MQTT_TOPIC=test/topic
+    depends_on:
+      - rabbitmq
+  rabbitmq-mqtt-producer:
+    image: rabbitmq-mqtt-producer
+    build:
+      context: ./rabbitmq-producer  # Dockerfile'ın bulunduğu klasör
+    ports:
+      - "8080:8080"  # Consumer web arayüzü için port
+    environment:
+      - MQTT_BROKER=tcp://rabbitmq:1883
+      - MQTT_CLIENT_ID=mqtt-producer
+      - MQTT_TOPIC=test/topic
+    depends_on:
+      - rabbitmq
+volumes:
+  rabbitmq_data:
+  rabbitmq_config:

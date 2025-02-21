@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-mqtt-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq-mqtt-consumer
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-mqtt-consumer
+    spec:
+      containers:
+        - name: rabbitmq-mqtt-consumer
+          image: ayyildiz42/rabbitmq-mqtt-consumer
+          ports:
+            - containerPort: 8081
+          env:
+            - name: MQTT_BROKER
+              value: "tcp://rabbitmq:1883"
+            - name: MQTT_CLIENT_ID
+              value: "mqtt-consumer"
+            - name: MQTT_TOPIC
+              value: "test/topic"
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-mqtt-consumer
+spec:
+  ports:
+    - port: 8081
+      targetPort: 8081
+  selector:
+    app: rabbitmq-mqtt-consumer
+  type: ClusterIP

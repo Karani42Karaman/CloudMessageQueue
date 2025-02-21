@@ -1,0 +1,32 @@
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MQTT Mesajları</title>
+    <script>
+        async function fetchMessages() {
+            const response = await fetch('/');
+            const messages = await response.json();
+
+            const messagesList = document.getElementById('messages');
+            messagesList.innerHTML = '';
+
+            messages.forEach((msg) => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <strong>Konu:</strong> ${msg.topic} <br>
+                    <strong>Mesaj:</strong> ${msg.payload} <br>
+                `;
+                messagesList.appendChild(listItem);
+            });
+        }
+
+
+        window.onload = fetchMessages;
+    </script>
+</head>
+<body>
+<h2>MQTT Mesajları</h2>
+<ul id="messages"></ul>
+</body>
+</html>

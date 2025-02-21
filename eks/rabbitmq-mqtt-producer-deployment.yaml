@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-mqtt-producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq-mqtt-producer
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-mqtt-producer
+    spec:
+      containers:
+        - name: rabbitmq-mqtt-producer
+          image: ayyildiz42/rabbitmq-mqtt-producer
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MQTT_BROKER
+              value: "tcp://rabbitmq:1883"
+            - name: MQTT_CLIENT_ID
+              value: "mqtt-producer"
+            - name: MQTT_TOPIC
+              value: "test/topic"
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-mqtt-producer
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: rabbitmq-mqtt-producer
+  type: ClusterIP
