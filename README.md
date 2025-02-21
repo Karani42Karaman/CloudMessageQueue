@@ -94,7 +94,7 @@ GET http://a086e6fe389da4a6b839c94e3b7ab23a-1797338516.eu-north-1.elb.amazonaws.
 Consumer servisi alınan mesajları bir web arayüzüne ileterek aşağıdaki adresten görüntülenmesini sağlar:
 
 ```
-http://a7e8010737b3648e4b8c2ce33901087d-1734708145.eu-north-1.elb.amazonaws.com:8081/index.htmlé
+http://a7e8010737b3648e4b8c2ce33901087d-1734708145.eu-north-1.elb.amazonaws.com:8081/index.html
 ```
 
 Burada **MQTT ile gönderilen mesajlar** listelenmektedir.
